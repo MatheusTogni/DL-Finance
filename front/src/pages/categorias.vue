@@ -79,6 +79,21 @@
                 <div class="text-h5 font-weight-bold" :style="{ color: categoria.cor }">
                   R$ {{ formatarValor(categoria.saldo_atual) }}
                 </div>
+                <div v-if="categoria.meta" class="mt-2">
+                  <div class="text-caption text-medium-emphasis">
+                    Meta: R$ {{ formatarValor(categoria.meta) }}
+                  </div>
+                  <v-progress-linear
+                    :model-value="Math.min((categoria.saldo_atual / categoria.meta) * 100, 100)"
+                    :color="categoria.saldo_atual > categoria.meta ? 'error' : categoria.cor"
+                    class="mt-1"
+                    height="6"
+                    rounded
+                  />
+                  <div class="text-caption mt-1" :class="categoria.saldo_atual > categoria.meta ? 'text-error' : 'text-success'">
+                    {{ categoria.saldo_atual > categoria.meta ? 'Acima da meta!' : `Restante: R$ ${formatarValor(categoria.meta - categoria.saldo_atual)}` }}
+                  </div>
+                </div>
               </div>
 
               <div class="d-flex gap-2">
@@ -182,6 +197,17 @@
               step="0.01"
               type="number"
             />
+
+            <v-text-field
+              v-model.number="formData.meta"
+              label="Meta de Gastos (opcional)"
+              prefix="R$"
+              prepend-inner-icon="mdi-target"
+              step="0.01"
+              type="number"
+              hint="Defina um limite de gastos para esta categoria"
+              persistent-hint
+            />
           </v-form>
         </v-card-text>
 
@@ -265,6 +291,7 @@
     tipo: '',
     cor: '#9C27B0',
     saldo_inicial: 0,
+    meta: undefined as number | undefined,
   })
 
   const snackbar = ref(false)
@@ -304,6 +331,7 @@
         tipo: categoria.tipo,
         cor: categoria.cor,
         saldo_inicial: 0,
+        meta: categoria.meta,
       }
     } else {
       categoriaEdit.value = null
@@ -312,6 +340,7 @@
         tipo: '',
         cor: '#9C27B0',
         saldo_inicial: 0,
+        meta: undefined,
       }
     }
     dialogCategoria.value = true
@@ -330,6 +359,7 @@
           nome: formData.value.nome,
           tipo: formData.value.tipo,
           cor: formData.value.cor,
+          meta: formData.value.meta,
         })
         mostrarMensagem('Categoria atualizada com sucesso!')
       } else {
@@ -373,7 +403,7 @@
 
   function formatarValor (valor: number | string) {
     const num = typeof valor === 'string' ? Number.parseFloat(valor) : valor
-    return num.toFixed(2).replace('.', ',')
+    return Math.abs(num).toFixed(2).replace('.', ',')
   }
 
   function mostrarMensagem (texto: string, cor = 'success') {

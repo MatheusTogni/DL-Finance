@@ -13,6 +13,7 @@ export interface Categoria {
   saldo_atual: number
   tipo: string
   cor: string
+  meta?: number
   created_at: string
   updated_at: string
 }
@@ -28,6 +29,7 @@ export interface CreateCategoriaDto {
   tipo: string
   cor?: string
   saldo_inicial?: number
+  meta?: number
 }
 
 export interface Lancamento {

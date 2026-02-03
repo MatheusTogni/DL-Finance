@@ -80,9 +80,8 @@
             <div class="d-flex align-center gap-3">
               <div
                 class="text-h6 font-weight-bold"
-                :class="lancamento.tipo_lancamento === 'entrada' ? 'text-success' : 'text-error'"
+                :style="{ color: lancamento.categoria_cor }"
               >
-                {{ lancamento.tipo_lancamento === 'entrada' ? '+' : '-' }}
                 R$ {{ formatarValor(lancamento.valor) }}
               </div>
               <div class="d-flex gap-2">
