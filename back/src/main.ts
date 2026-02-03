@@ -10,10 +10,13 @@ async function bootstrap() {
   
   // Configurar CORS para permitir comunicação com o frontend
   app.enableCors({
-    origin: ['http://localhost:5173', 'http://127.0.0.1:5173', 'https://dl-finance-pi.vercel.app'], // URL do Vite (frontend)
+    origin: ['https://dl-finance-pi.vercel.app'],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
-    allowedHeaders: 'Content-Type, Accept, Authorization',
+    allowedHeaders: ['Content-Type', 'Accept', 'Authorization'],
+    exposedHeaders: ['Content-Type'],
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
   });
 
   const port = process.env.PORT ?? 3001;
