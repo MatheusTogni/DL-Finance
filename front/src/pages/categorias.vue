@@ -85,13 +85,13 @@
                   </div>
                   <v-progress-linear
                     class="mt-1"
-                    :color="categoria.saldo_atual > categoria.meta ? 'error' : categoria.cor"
+                    :color="Math.abs(categoria.saldo_atual) > categoria.meta ? 'error' : categoria.cor"
                     height="6"
-                    :model-value="Math.min((categoria.saldo_atual / categoria.meta) * 100, 100)"
+                    :model-value="Math.min((Math.abs(categoria.saldo_atual) / categoria.meta) * 100, 100)"
                     rounded
                   />
-                  <div class="text-caption mt-1" :class="categoria.saldo_atual > categoria.meta ? 'text-error' : 'text-success'">
-                    {{ categoria.saldo_atual > categoria.meta ? 'Acima da meta!' : `Restante: R$ ${formatarValor(categoria.meta - categoria.saldo_atual)}` }}
+                  <div class="text-caption mt-1" :class="Math.abs(categoria.saldo_atual) > categoria.meta ? 'text-error' : 'text-success'">
+                    {{ Math.abs(categoria.saldo_atual) > categoria.meta ? 'Acima da meta!' : `Restante: R$ ${formatarValor(categoria.meta - Math.abs(categoria.saldo_atual))}` }}
                   </div>
                 </div>
               </div>
