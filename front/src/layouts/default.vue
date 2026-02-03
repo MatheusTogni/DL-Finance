@@ -70,5 +70,10 @@ watch(() => route.path, (newPath) => {
 .bottom-nav-border {
   border: 2px solid #9C27B0 !important;
   border-bottom: none !important;
+  position: fixed !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 1000 !important;
 }
 </style>
