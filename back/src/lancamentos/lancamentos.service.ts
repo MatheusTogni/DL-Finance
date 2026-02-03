@@ -97,55 +97,28 @@ export class LancamentosService {
       createDto.data_lancamento || new Date(),
     ];
     const result = await this.db.query(query, values);
-    
-    // Atualizar saldo da categoria
-    const updateSaldoQuery = `
-      UPDATE categorias 
-      SET saldo_atual = saldo_atual ${tipoLancamento === 'entrada' ? '+' : '-'} $1
-      WHERE id = $2
-    `;
-    await this.db.query(updateSaldoQuery, [createDto.valor, createDto.categoria_id]);
-    
     return result.rows[0];
   }
 
   async update(id: number, updateDto: UpdateLancamentoDto): Promise<Lancamento> {
-    // Buscar lançamento atual para reverter o saldo
-    const lancamentoAtual = await this.findOne(id);
-    if (!lancamentoAtual) {
-      throw new Error('Lançamento não encontrado');
-    }
-    
-    // Reverter o saldo antigo
-    const revertQuery = `
-      UPDATE categorias 
-      SET saldo_atual = saldo_atual ${lancamentoAtual.tipo_lancamento === 'entrada' ? '-' : '+'} $1
-      WHERE id = $2
-    `;
-    await this.db.query(revertQuery, [lancamentoAtual.valor, lancamentoAtual.categoria_id]);
-    
     const fields: string[] = [];
     const values: any[] = [];
     let paramCount = 1;
 
     // Se a categoria foi alterada, buscar o novo tipo
-    let novoTipoLancamento = lancamentoAtual.tipo_lancamento;
-    let novaCategoriaId = lancamentoAtual.categoria_id;
-    
     if (updateDto.categoria_id !== undefined) {
-      novaCategoriaId = updateDto.categoria_id;
       const categoriaQuery = `SELECT tipo FROM categorias WHERE id = $1`;
       const categoriaResult = await this.db.query(categoriaQuery, [updateDto.categoria_id]);
       
       if (categoriaResult.rows.length) {
         const categoria = categoriaResult.rows[0];
-        novoTipoLancamento = categoria.tipo.toLowerCase() === 'positivo' ? 'entrada' : 'saida';
+        const novoTipoLancamento = categoria.tipo.toLowerCase() === 'positivo' ? 'entrada' : 'saida';
+        
+        fields.push(`categoria_id = $${paramCount++}`);
+        values.push(updateDto.categoria_id);
+        fields.push(`tipo_lancamento = $${paramCount++}`);
+        values.push(novoTipoLancamento);
       }
-      
-      fields.push(`categoria_id = $${paramCount++}`);
-      values.push(updateDto.categoria_id);
-      fields.push(`tipo_lancamento = $${paramCount++}`);
-      values.push(novoTipoLancamento);
     }
     
     if (updateDto.descricao !== undefined) {
@@ -153,7 +126,6 @@ export class LancamentosService {
       values.push(updateDto.descricao);
     }
     
-    const novoValor = updateDto.valor !== undefined ? updateDto.valor : lancamentoAtual.valor;
     if (updateDto.valor !== undefined) {
       fields.push(`valor = $${paramCount++}`);
       values.push(updateDto.valor);
@@ -174,33 +146,10 @@ export class LancamentosService {
     `;
 
     const result = await this.db.query(query, values);
-    
-    // Aplicar o novo saldo
-    const updateSaldoQuery = `
-      UPDATE categorias 
-      SET saldo_atual = saldo_atual ${novoTipoLancamento === 'entrada' ? '+' : '-'} $1
-      WHERE id = $2
-    `;
-    await this.db.query(updateSaldoQuery, [novoValor, novaCategoriaId]);
-    
     return result.rows[0];
   }
 
   async delete(id: number): Promise<void> {
-    // Buscar lançamento antes de deletar para reverter o saldo
-    const lancamento = await this.findOne(id);
-    if (!lancamento) {
-      throw new Error('Lançamento não encontrado');
-    }
-    
-    // Reverter o saldo da categoria
-    const updateSaldoQuery = `
-      UPDATE categorias 
-      SET saldo_atual = saldo_atual ${lancamento.tipo_lancamento === 'entrada' ? '-' : '+'} $1
-      WHERE id = $2
-    `;
-    await this.db.query(updateSaldoQuery, [lancamento.valor, lancamento.categoria_id]);
-    
     const query = `DELETE FROM lancamentos WHERE id = $1`;
     await this.db.query(query, [id]);
   }
