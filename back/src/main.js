@@ -40,10 +40,13 @@ dotenv.config();
 async function bootstrap() {
     const app = await core_1.NestFactory.create(app_module_1.AppModule);
     app.enableCors({
-        origin: ['http://localhost:5173', 'http://127.0.0.1:5173', 'https://dl-finance-pi.vercel.app'],
+        origin: ['https://dl-finance-pi.vercel.app', 'http://localhost:5173', 'http://127.0.0.1:5173'],
         methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
         credentials: true,
-        allowedHeaders: 'Content-Type, Accept, Authorization',
+        allowedHeaders: ['Content-Type', 'Accept', 'Authorization'],
+        exposedHeaders: ['Content-Type'],
+        preflightContinue: false,
+        optionsSuccessStatus: 204,
     });
     const port = process.env.PORT ?? 3001;
     await app.listen(port);

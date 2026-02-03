@@ -19,7 +19,7 @@
       "headers": [
         {
           "key": "Access-Control-Allow-Origin",
-          "value": "*"
+          "value": "https://dl-finance-pi.vercel.app"
         },
         {
           "key": "Access-Control-Allow-Methods",
