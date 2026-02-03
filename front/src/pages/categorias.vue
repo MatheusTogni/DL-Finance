@@ -84,10 +84,10 @@
                     Meta: R$ {{ formatarValor(categoria.meta) }}
                   </div>
                   <v-progress-linear
-                    :model-value="Math.min((categoria.saldo_atual / categoria.meta) * 100, 100)"
-                    :color="categoria.saldo_atual > categoria.meta ? 'error' : categoria.cor"
                     class="mt-1"
+                    :color="categoria.saldo_atual > categoria.meta ? 'error' : categoria.cor"
                     height="6"
+                    :model-value="Math.min((categoria.saldo_atual / categoria.meta) * 100, 100)"
                     rounded
                   />
                   <div class="text-caption mt-1" :class="categoria.saldo_atual > categoria.meta ? 'text-error' : 'text-success'">
@@ -200,13 +200,13 @@
 
             <v-text-field
               v-model.number="formData.meta"
+              hint="Defina um limite de gastos para esta categoria"
               label="Meta de Gastos (opcional)"
+              persistent-hint
               prefix="R$"
               prepend-inner-icon="mdi-target"
               step="0.01"
               type="number"
-              hint="Defina um limite de gastos para esta categoria"
-              persistent-hint
             />
           </v-form>
         </v-card-text>
