@@ -25,7 +25,7 @@ export class AppController {
       await this.databaseService.query('SELECT 1');
       dbResponseTime = Date.now() - dbStart;
       dbStatus = 'connected';
-    } catch (error) {
+    } catch {
       dbStatus = 'error';
     }
 

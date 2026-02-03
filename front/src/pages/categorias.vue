@@ -3,12 +3,12 @@
     <!-- Header -->
     <div class="mb-6">
       <v-btn
-        color="primary"
-        size="large"
-        prepend-icon="mdi-plus-circle"
         block
         class="mb-4"
+        color="primary"
         elevation="2"
+        prepend-icon="mdi-plus-circle"
+        size="large"
         @click="abrirDialogCategoria()"
       >
         Nova Categoria
@@ -18,8 +18,8 @@
     <!-- Lista de Categorias -->
     <div v-if="loadingCategorias" class="text-center pa-16">
       <v-progress-circular
-        indeterminate
         color="primary"
+        indeterminate
         size="64"
         width="6"
       />
@@ -27,7 +27,13 @@
     </div>
 
     <v-row v-else>
-      <v-col v-for="categoria in categorias" :key="categoria.id" cols="12" sm="6" md="4">
+      <v-col
+        v-for="categoria in categorias"
+        :key="categoria.id"
+        cols="12"
+        md="4"
+        sm="6"
+      >
         <v-card class="categoria-card" elevation="2" hover>
           <div class="pa-4">
             <div class="d-flex justify-space-between align-center mb-3">
@@ -44,10 +50,10 @@
                 <div>
                   <h3 class="text-h6 font-weight-bold">{{ categoria.nome }}</h3>
                   <v-chip
+                    class="mt-1"
                     :color="categoria.cor"
                     size="small"
                     variant="tonal"
-                    class="mt-1"
                   >
                     {{ categoria.tipo }}
                   </v-chip>
@@ -61,7 +67,7 @@
               v-if="categoria.total_lancamentos !== undefined"
               class="text-caption text-medium-emphasis mb-3"
             >
-              <v-icon size="16" class="mr-1">mdi-receipt-text</v-icon>
+              <v-icon class="mr-1" size="16">mdi-receipt-text</v-icon>
               {{ categoria.total_lancamentos }} lançamento{{
                 categoria.total_lancamentos !== 1 ? "s" : ""
               }}
@@ -74,20 +80,20 @@
                   R$ {{ formatarValor(categoria.saldo_atual) }}
                 </div>
               </div>
-              
+
               <div class="d-flex gap-2">
                 <v-btn
-                  variant="tonal"
                   color="#269B71"
-                  size="small"
                   icon="mdi-pencil"
+                  size="small"
+                  variant="tonal"
                   @click="abrirDialogCategoria(categoria)"
                 />
                 <v-btn
-                  variant="tonal"
                   color="error"
-                  size="small"
                   icon="mdi-delete"
+                  size="small"
+                  variant="tonal"
                   @click="confirmarExclusao(categoria)"
                 />
               </div>
@@ -117,22 +123,22 @@
           <v-form ref="formCategoria" v-model="formValid">
             <v-text-field
               v-model="formData.nome"
+              class="mb-2"
               label="Nome da Categoria"
               placeholder="Ex: Lanches, Mercado, Investimentos"
-              :rules="[(v) => !!v || 'Nome é obrigatório']"
               prepend-inner-icon="mdi-tag"
-              class="mb-2"
               required
+              :rules="[(v) => !!v || 'Nome é obrigatório']"
             />
 
             <v-text-field
               v-model="formData.tipo"
+              class="mb-2"
               label="Tipo"
               placeholder="Ex: gastos, investimentos, lanches"
-              :rules="[(v) => !!v || 'Tipo é obrigatório']"
               prepend-inner-icon="mdi-shape"
-              class="mb-2"
               required
+              :rules="[(v) => !!v || 'Tipo é obrigatório']"
             />
 
             <div class="mb-4">
@@ -149,10 +155,10 @@
                 />
                 <v-text-field
                   v-model="formData.cor"
+                  density="comfortable"
+                  hide-details
                   placeholder="#9C27B0"
                   :rules="[validarCor]"
-                  hide-details
-                  density="comfortable"
                 />
               </div>
               <div class="mt-2 d-flex flex-wrap gap-2">
@@ -160,8 +166,8 @@
                   v-for="cor in coresSugeridas"
                   :key="cor"
                   :color="cor"
-                  size="small"
                   icon
+                  size="small"
                   @click="formData.cor = cor"
                 />
               </div>
@@ -171,10 +177,10 @@
               v-if="!categoriaEdit"
               v-model.number="formData.saldo_inicial"
               label="Saldo Inicial (opcional)"
-              type="number"
-              step="0.01"
-              prepend-inner-icon="mdi-cash"
               prefix="R$"
+              prepend-inner-icon="mdi-cash"
+              step="0.01"
+              type="number"
             />
           </v-form>
         </v-card-text>
@@ -184,10 +190,10 @@
           <v-spacer />
           <v-btn
             color="primary"
-            variant="elevated"
-            size="large"
             :disabled="!formValid"
             :loading="salvandoCategoria"
+            size="large"
+            variant="elevated"
             @click="salvarCategoria"
           >
             <v-icon start>mdi-content-save</v-icon>
@@ -201,20 +207,20 @@
     <v-dialog v-model="dialogExcluir" max-width="400">
       <v-card rounded="xl">
         <v-card-title class="text-h6 pa-4">
-          <v-icon color="error" class="mr-2">mdi-alert-circle</v-icon>
+          <v-icon class="mr-2" color="error">mdi-alert-circle</v-icon>
           Confirmar Exclusão
         </v-card-title>
         <v-card-text class="pa-4">
           Tem certeza que deseja excluir a categoria
-          <strong>"{{ categoriaParaExcluir?.nome }}"</strong>? <br /><br />
-          <v-alert type="warning" variant="tonal" density="compact">
+          <strong>"{{ categoriaParaExcluir?.nome }}"</strong>? <br><br>
+          <v-alert density="compact" type="warning" variant="tonal">
             Todos os lançamentos associados também serão excluídos.
           </v-alert>
         </v-card-text>
         <v-card-actions class="pa-4">
           <v-btn variant="text" @click="dialogExcluir = false"> Cancelar </v-btn>
           <v-spacer />
-          <v-btn color="error" variant="elevated" :loading="excluindoCategoria" @click="excluirCategoria">
+          <v-btn color="error" :loading="excluindoCategoria" variant="elevated" @click="excluirCategoria">
             <v-icon start>mdi-delete</v-icon>
             Excluir
           </v-btn>
@@ -225,9 +231,9 @@
     <v-snackbar
       v-model="snackbar"
       :color="snackbarColor"
-      timeout="3000"
       location="top"
       rounded="pill"
+      timeout="3000"
     >
       <div class="d-flex align-center">
         <v-icon class="mr-2">{{
@@ -240,145 +246,145 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { categoriasApi, type Categoria, type CategoriaResumo } from '@/services/api';
+  import { onMounted, ref } from 'vue'
+  import { type Categoria, type CategoriaResumo, categoriasApi } from '@/services/api'
 
-const categorias = ref<CategoriaResumo[]>([]);
-const dialogCategoria = ref(false);
-const dialogExcluir = ref(false);
-const categoriaEdit = ref<Categoria | null>(null);
-const categoriaParaExcluir = ref<Categoria | null>(null);
-const formValid = ref(false);
-const formCategoria = ref();
-const loadingCategorias = ref(false);
-const salvandoCategoria = ref(false);
-const excluindoCategoria = ref(false);
+  const categorias = ref<CategoriaResumo[]>([])
+  const dialogCategoria = ref(false)
+  const dialogExcluir = ref(false)
+  const categoriaEdit = ref<Categoria | null>(null)
+  const categoriaParaExcluir = ref<Categoria | null>(null)
+  const formValid = ref(false)
+  const formCategoria = ref()
+  const loadingCategorias = ref(false)
+  const salvandoCategoria = ref(false)
+  const excluindoCategoria = ref(false)
 
-const formData = ref({
-  nome: '',
-  tipo: '',
-  cor: '#9C27B0',
-  saldo_inicial: 0,
-});
+  const formData = ref({
+    nome: '',
+    tipo: '',
+    cor: '#9C27B0',
+    saldo_inicial: 0,
+  })
 
-const snackbar = ref(false);
-const snackbarText = ref('');
-const snackbarColor = ref('success');
+  const snackbar = ref(false)
+  const snackbarText = ref('')
+  const snackbarColor = ref('success')
 
-const coresSugeridas = [
-  '#9C27B0', // Roxo
-  '#E91E63', // Rosa
-  '#3F51B5', // Azul
-  '#009688', // Verde-azulado
-  '#FF9800', // Laranja
-  '#795548', // Marrom
-  '#607D8B', // Cinza-azulado
-  '#F44336', // Vermelho
-];
+  const coresSugeridas = [
+    '#9C27B0', // Roxo
+    '#E91E63', // Rosa
+    '#3F51B5', // Azul
+    '#009688', // Verde-azulado
+    '#FF9800', // Laranja
+    '#795548', // Marrom
+    '#607D8B', // Cinza-azulado
+    '#F44336', // Vermelho
+  ]
 
-const carregarCategorias = async () => {
-  try {
-    loadingCategorias.value = true;
-    const response = await categoriasApi.getResumo();
-    categorias.value = response.data;
-    console.log('Categorias carregadas:', response.data);
-  } catch (error) {
-    console.error('Erro ao carregar categorias:', error);
-    mostrarMensagem('Erro ao carregar categorias', 'error');
-  } finally {
-    loadingCategorias.value = false;
-  }
-};
-
-const abrirDialogCategoria = (categoria?: Categoria) => {
-  if (categoria) {
-    categoriaEdit.value = categoria;
-    formData.value = {
-      nome: categoria.nome,
-      tipo: categoria.tipo,
-      cor: categoria.cor,
-      saldo_inicial: 0,
-    };
-  } else {
-    categoriaEdit.value = null;
-    formData.value = {
-      nome: '',
-      tipo: '',
-      cor: '#9C27B0',
-      saldo_inicial: 0,
-    };
-  }
-  dialogCategoria.value = true;
-};
-
-const salvarCategoria = async () => {
-  if (!formCategoria.value) return;
-
-  const valid = await formCategoria.value.validate();
-  if (!valid.valid) return;
-
-  try {
-    salvandoCategoria.value = true;
-    if (categoriaEdit.value) {
-      await categoriasApi.update(categoriaEdit.value.id, {
-        nome: formData.value.nome,
-        tipo: formData.value.tipo,
-        cor: formData.value.cor,
-      });
-      mostrarMensagem('Categoria atualizada com sucesso!');
-    } else {
-      await categoriasApi.create(formData.value);
-      mostrarMensagem('Categoria criada com sucesso!');
+  async function carregarCategorias () {
+    try {
+      loadingCategorias.value = true
+      const response = await categoriasApi.getResumo()
+      categorias.value = response.data
+      console.log('Categorias carregadas:', response.data)
+    } catch (error) {
+      console.error('Erro ao carregar categorias:', error)
+      mostrarMensagem('Erro ao carregar categorias', 'error')
+    } finally {
+      loadingCategorias.value = false
     }
-    dialogCategoria.value = false;
-    carregarCategorias();
-  } catch (error) {
-    mostrarMensagem('Erro ao salvar categoria', 'error');
-  } finally {
-    salvandoCategoria.value = false;
   }
-};
 
-const confirmarExclusao = (categoria: Categoria) => {
-  categoriaParaExcluir.value = categoria;
-  dialogExcluir.value = true;
-};
-
-const excluirCategoria = async () => {
-  if (!categoriaParaExcluir.value) return;
-
-  try {
-    excluindoCategoria.value = true;
-    await categoriasApi.delete(categoriaParaExcluir.value.id);
-    mostrarMensagem('Categoria excluída com sucesso!');
-    dialogExcluir.value = false;
-    carregarCategorias();
-  } catch (error) {
-    mostrarMensagem('Erro ao excluir categoria', 'error');
-  } finally {
-    excluindoCategoria.value = false;
+  function abrirDialogCategoria (categoria?: Categoria) {
+    if (categoria) {
+      categoriaEdit.value = categoria
+      formData.value = {
+        nome: categoria.nome,
+        tipo: categoria.tipo,
+        cor: categoria.cor,
+        saldo_inicial: 0,
+      }
+    } else {
+      categoriaEdit.value = null
+      formData.value = {
+        nome: '',
+        tipo: '',
+        cor: '#9C27B0',
+        saldo_inicial: 0,
+      }
+    }
+    dialogCategoria.value = true
   }
-};
 
-const validarCor = (v: string) => {
-  if (!v) return true;
-  return /^#[0-9A-F]{6}$/i.test(v) || 'Cor inválida (use formato #RRGGBB)';
-};
+  async function salvarCategoria () {
+    if (!formCategoria.value) return
 
-const formatarValor = (valor: number | string) => {
-  const num = typeof valor === 'string' ? parseFloat(valor) : valor;
-  return num.toFixed(2).replace('.', ',');
-};
+    const valid = await formCategoria.value.validate()
+    if (!valid.valid) return
 
-const mostrarMensagem = (texto: string, cor: string = 'success') => {
-  snackbarText.value = texto;
-  snackbarColor.value = cor;
-  snackbar.value = true;
-};
+    try {
+      salvandoCategoria.value = true
+      if (categoriaEdit.value) {
+        await categoriasApi.update(categoriaEdit.value.id, {
+          nome: formData.value.nome,
+          tipo: formData.value.tipo,
+          cor: formData.value.cor,
+        })
+        mostrarMensagem('Categoria atualizada com sucesso!')
+      } else {
+        await categoriasApi.create(formData.value)
+        mostrarMensagem('Categoria criada com sucesso!')
+      }
+      dialogCategoria.value = false
+      carregarCategorias()
+    } catch {
+      mostrarMensagem('Erro ao salvar categoria', 'error')
+    } finally {
+      salvandoCategoria.value = false
+    }
+  }
 
-onMounted(() => {
-  carregarCategorias();
-});
+  function confirmarExclusao (categoria: Categoria) {
+    categoriaParaExcluir.value = categoria
+    dialogExcluir.value = true
+  }
+
+  async function excluirCategoria () {
+    if (!categoriaParaExcluir.value) return
+
+    try {
+      excluindoCategoria.value = true
+      await categoriasApi.delete(categoriaParaExcluir.value.id)
+      mostrarMensagem('Categoria excluída com sucesso!')
+      dialogExcluir.value = false
+      carregarCategorias()
+    } catch {
+      mostrarMensagem('Erro ao excluir categoria', 'error')
+    } finally {
+      excluindoCategoria.value = false
+    }
+  }
+
+  function validarCor (v: string) {
+    if (!v) return true
+    return /^#[0-9A-F]{6}$/i.test(v) || 'Cor inválida (use formato #RRGGBB)'
+  }
+
+  function formatarValor (valor: number | string) {
+    const num = typeof valor === 'string' ? Number.parseFloat(valor) : valor
+    return num.toFixed(2).replace('.', ',')
+  }
+
+  function mostrarMensagem (texto: string, cor = 'success') {
+    snackbarText.value = texto
+    snackbarColor.value = cor
+    snackbar.value = true
+  }
+
+  onMounted(() => {
+    carregarCategorias()
+  })
 </script>
 
 <style scoped>

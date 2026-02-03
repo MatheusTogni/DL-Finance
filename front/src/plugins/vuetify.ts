@@ -4,12 +4,12 @@
  * Framework documentation: https://vuetifyjs.com`
  */
 
-// Styles
-import '@mdi/font/css/materialdesignicons.css'
-import 'vuetify/styles'
-
 // Composables
 import { createVuetify } from 'vuetify'
+// Styles
+import '@mdi/font/css/materialdesignicons.css'
+
+import 'vuetify/styles'
 
 // https://vuetifyjs.com/en/introduction/why-vuetify/#feature-guides
 export default createVuetify({
@@ -19,16 +19,16 @@ export default createVuetify({
       dark: {
         dark: true,
         colors: {
-          primary: '#9C27B0', // Roxo principal
-          secondary: '#BA68C8', // Roxo claro
-          accent: '#7B1FA2', // Roxo escuro
-          background: '#1A1A1A', // Preto mais claro
-          surface: '#242424', // Cinza escuro
+          'primary': '#9C27B0', // Roxo principal
+          'secondary': '#BA68C8', // Roxo claro
+          'accent': '#7B1FA2', // Roxo escuro
+          'background': '#1A1A1A', // Preto mais claro
+          'surface': '#242424', // Cinza escuro
           'surface-variant': '#2A2A2A', // Cinza escuro variante
-          error: '#E53935',
-          success: '#43A047',
-          warning: '#FB8C00',
-          info: '#1E88E5',
+          'error': '#E53935',
+          'success': '#43A047',
+          'warning': '#FB8C00',
+          'info': '#1E88E5',
         },
       },
     },

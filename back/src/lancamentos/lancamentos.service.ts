@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service';
-import { 
-  Lancamento, 
-  LancamentoComCategoria, 
-  CreateLancamentoDto, 
-  UpdateLancamentoDto 
+import {
+  Lancamento,
+  LancamentoComCategoria,
+  CreateLancamentoDto,
+  UpdateLancamentoDto,
 } from './lancamentos.interface';
 
 @Injectable()
@@ -28,10 +28,12 @@ export class LancamentosService {
       ORDER BY l.data_lancamento DESC, l.created_at DESC
     `;
     const result = await this.db.query(query);
-    return result.rows;
+    return result.rows as LancamentoComCategoria[];
   }
 
-  async findByCategoria(categoriaId: number): Promise<LancamentoComCategoria[]> {
+  async findByCategoria(
+    categoriaId: number,
+  ): Promise<LancamentoComCategoria[]> {
     const query = `
       SELECT 
         l.id,
@@ -49,7 +51,7 @@ export class LancamentosService {
       ORDER BY l.data_lancamento DESC, l.created_at DESC
     `;
     const result = await this.db.query(query, [categoriaId]);
-    return result.rows;
+    return result.rows as LancamentoComCategoria[];
   }
 
   async findOne(id: number): Promise<LancamentoComCategoria> {
@@ -69,21 +71,24 @@ export class LancamentosService {
       WHERE l.id = $1
     `;
     const result = await this.db.query(query, [id]);
-    return result.rows[0];
+    return result.rows[0] as LancamentoComCategoria;
   }
 
   async create(createDto: CreateLancamentoDto): Promise<Lancamento> {
     // Buscar a categoria para determinar o tipo de lançamento automaticamente
     const categoriaQuery = `SELECT tipo FROM categorias WHERE id = $1`;
-    const categoriaResult = await this.db.query(categoriaQuery, [createDto.categoria_id]);
-    
+    const categoriaResult = await this.db.query(categoriaQuery, [
+      createDto.categoria_id,
+    ]);
+
     if (!categoriaResult.rows.length) {
       throw new Error('Categoria não encontrada');
     }
-    
-    const categoria = categoriaResult.rows[0];
-    const tipoLancamento = categoria.tipo.toLowerCase() === 'positivo' ? 'entrada' : 'saida';
-    
+
+    const categoria = categoriaResult.rows[0] as { tipo: string };
+    const tipoLancamento =
+      categoria.tipo.toLowerCase() === 'positivo' ? 'entrada' : 'saida';
+
     const query = `
       INSERT INTO lancamentos (categoria_id, descricao, valor, tipo_lancamento, data_lancamento)
       VALUES ($1, $2, $3, $4, $5)
@@ -97,40 +102,46 @@ export class LancamentosService {
       createDto.data_lancamento || new Date(),
     ];
     const result = await this.db.query(query, values);
-    return result.rows[0];
+    return result.rows[0] as Lancamento;
   }
 
-  async update(id: number, updateDto: UpdateLancamentoDto): Promise<Lancamento> {
+  async update(
+    id: number,
+    updateDto: UpdateLancamentoDto,
+  ): Promise<Lancamento> {
     const fields: string[] = [];
-    const values: any[] = [];
+    const values: (string | number | Date)[] = [];
     let paramCount = 1;
 
     // Se a categoria foi alterada, buscar o novo tipo
     if (updateDto.categoria_id !== undefined) {
       const categoriaQuery = `SELECT tipo FROM categorias WHERE id = $1`;
-      const categoriaResult = await this.db.query(categoriaQuery, [updateDto.categoria_id]);
-      
+      const categoriaResult = await this.db.query(categoriaQuery, [
+        updateDto.categoria_id,
+      ]);
+
       if (categoriaResult.rows.length) {
-        const categoria = categoriaResult.rows[0];
-        const novoTipoLancamento = categoria.tipo.toLowerCase() === 'positivo' ? 'entrada' : 'saida';
-        
+        const categoria = categoriaResult.rows[0] as { tipo: string };
+        const novoTipoLancamento =
+          categoria.tipo.toLowerCase() === 'positivo' ? 'entrada' : 'saida';
+
         fields.push(`categoria_id = $${paramCount++}`);
         values.push(updateDto.categoria_id);
         fields.push(`tipo_lancamento = $${paramCount++}`);
         values.push(novoTipoLancamento);
       }
     }
-    
+
     if (updateDto.descricao !== undefined) {
       fields.push(`descricao = $${paramCount++}`);
       values.push(updateDto.descricao);
     }
-    
+
     if (updateDto.valor !== undefined) {
       fields.push(`valor = $${paramCount++}`);
       values.push(updateDto.valor);
     }
-    
+
     if (updateDto.data_lancamento !== undefined) {
       fields.push(`data_lancamento = $${paramCount++}`);
       values.push(updateDto.data_lancamento);
@@ -146,7 +157,7 @@ export class LancamentosService {
     `;
 
     const result = await this.db.query(query, values);
-    return result.rows[0];
+    return result.rows[0] as Lancamento;
   }
 
   async delete(id: number): Promise<void> {

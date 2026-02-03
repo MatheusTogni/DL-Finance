@@ -1,16 +1,19 @@
-import { 
-  Controller, 
-  Get, 
-  Post, 
-  Put, 
-  Delete, 
-  Body, 
-  Param, 
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
   ParseIntPipe,
-  Query
+  Query,
 } from '@nestjs/common';
 import { LancamentosService } from './lancamentos.service';
-import type { CreateLancamentoDto, UpdateLancamentoDto } from './lancamentos.interface';
+import type {
+  CreateLancamentoDto,
+  UpdateLancamentoDto,
+} from './lancamentos.interface';
 
 @Controller('lancamentos')
 export class LancamentosController {

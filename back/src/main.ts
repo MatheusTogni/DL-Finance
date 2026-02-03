@@ -7,10 +7,14 @@ dotenv.config();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  
+
   // Configurar CORS para permitir comunicação com o frontend
   app.enableCors({
-    origin: ['https://dl-finance-front.vercel.app', 'http://localhost:5173', 'http://127.0.0.1:5173'],
+    origin: [
+      'https://dl-finance-front.vercel.app',
+      'http://localhost:5173',
+      'http://127.0.0.1:5173',
+    ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
     allowedHeaders: ['Content-Type', 'Accept', 'Authorization'],
@@ -23,4 +27,4 @@ async function bootstrap() {
   await app.listen(port);
   console.log(`🚀 Backend rodando na porta ${port}`);
 }
-bootstrap();
+void bootstrap();

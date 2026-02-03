@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service';
-import { Categoria, CreateCategoriaDto, UpdateCategoriaDto } from './categorias.interface';
+import {
+  Categoria,
+  CreateCategoriaDto,
+  UpdateCategoriaDto,
+} from './categorias.interface';
 
 @Injectable()
 export class CategoriasService {
@@ -13,7 +17,7 @@ export class CategoriasService {
       ORDER BY nome ASC
     `;
     const result = await this.db.query(query);
-    return result.rows;
+    return result.rows as Categoria[];
   }
 
   async findOne(id: number): Promise<Categoria> {
@@ -23,7 +27,7 @@ export class CategoriasService {
       WHERE id = $1
     `;
     const result = await this.db.query(query, [id]);
-    return result.rows[0];
+    return result.rows[0] as Categoria;
   }
 
   async create(createDto: CreateCategoriaDto): Promise<Categoria> {
@@ -39,12 +43,12 @@ export class CategoriasService {
       createDto.saldo_inicial || 0,
     ];
     const result = await this.db.query(query, values);
-    return result.rows[0];
+    return result.rows[0] as Categoria;
   }
 
   async update(id: number, updateDto: UpdateCategoriaDto): Promise<Categoria> {
     const fields: string[] = [];
-    const values: any[] = [];
+    const values: (string | number)[] = [];
     let paramCount = 1;
 
     if (updateDto.nome !== undefined) {
@@ -71,7 +75,7 @@ export class CategoriasService {
     `;
 
     const result = await this.db.query(query, values);
-    return result.rows[0];
+    return result.rows[0] as Categoria;
   }
 
   async delete(id: number): Promise<void> {

@@ -34,13 +34,10 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
     await this.pool.end();
   }
 
-  async query(text: string, params?: any[]): Promise<QueryResult> {
-    const start = Date.now();
+  async query(text: string, params?: unknown[]): Promise<QueryResult> {
     try {
-      const res = await this.pool.query(text, params);
-      const duration = Date.now() - start;
-      return res;
-    } catch (error) {
+      return await this.pool.query(text, params);
+    } catch (error: unknown) {
       console.error('Erro na query:', { text, error });
       throw error;
     }

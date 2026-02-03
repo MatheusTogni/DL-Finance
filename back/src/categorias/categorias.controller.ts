@@ -1,15 +1,18 @@
-import { 
-  Controller, 
-  Get, 
-  Post, 
-  Put, 
-  Delete, 
-  Body, 
-  Param, 
-  ParseIntPipe 
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { CategoriasService } from './categorias.service';
-import type { CreateCategoriaDto, UpdateCategoriaDto } from './categorias.interface';
+import type {
+  CreateCategoriaDto,
+  UpdateCategoriaDto,
+} from './categorias.interface';
 
 @Controller('categorias')
 export class CategoriasController {

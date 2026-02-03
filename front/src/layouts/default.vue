@@ -4,8 +4,8 @@
       <!-- Menu hamburguer para mobile -->
       <v-app-bar-nav-icon
         class="d-md-none"
-        @click="drawer = !drawer"
         color="white"
+        @click="drawer = !drawer"
       />
 
       <v-app-bar-title class="text-h5 font-weight-bold">
@@ -17,10 +17,10 @@
         <v-btn
           v-for="item in menuItems"
           :key="item.to"
-          :to="item.to"
-          variant="text"
           class="d-none d-md-flex mx-1"
           color="white"
+          :to="item.to"
+          variant="text"
         >
           <v-icon start>{{ item.icon }}</v-icon>
           {{ item.title }}
@@ -31,25 +31,25 @@
     <!-- Menu Lateral -->
     <v-navigation-drawer
       v-model="drawer"
-      temporary
-      location="left"
       class="d-md-none drawer-custom"
+      location="left"
+      temporary
       width="280"
     >
       <v-divider class="mb-2" />
 
       <!-- Itens do Menu -->
-      <v-list nav class="px-2">
+      <v-list class="px-2" nav>
         <v-list-item
           v-for="item in menuItems"
           :key="item.to"
-          :to="item.to"
-          :prepend-icon="item.icon"
-          :title="item.title"
-          @click="drawer = false"
-          rounded="xl"
           class="mb-1"
           color="primary"
+          :prepend-icon="item.icon"
+          rounded="xl"
+          :title="item.title"
+          :to="item.to"
+          @click="drawer = false"
         />
       </v-list>
 
@@ -58,11 +58,11 @@
         <div class="pa-4 text-center">
           <v-divider class="mb-3" />
           <v-chip
-            color="primary"
-            variant="flat"
-            size="small"
             class="mb-2"
+            color="primary"
             prepend-icon="mdi-information-outline"
+            size="small"
+            variant="flat"
           >
             Versão 1.0.0
           </v-chip>
@@ -80,14 +80,14 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
+  import { ref } from 'vue'
 
-const drawer = ref(false);
+  const drawer = ref(false)
 
-const menuItems = [
-  { title: 'Categorias', icon: 'mdi-folder', to: '/categorias' },
-  { title: 'Lançamentos', icon: 'mdi-receipt-text', to: '/lancamentos' },
-];
+  const menuItems = [
+    { title: 'Categorias', icon: 'mdi-folder', to: '/categorias' },
+    { title: 'Lançamentos', icon: 'mdi-receipt-text', to: '/lancamentos' },
+  ]
 </script>
 
 <style scoped>
