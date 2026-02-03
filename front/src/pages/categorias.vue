@@ -49,33 +49,14 @@
                 />
                 <div>
                   <h3 class="text-h6 font-weight-bold">{{ categoria.nome }}</h3>
-                  <v-chip
-                    class="mt-1"
-                    :color="categoria.cor"
-                    size="small"
-                    variant="tonal"
-                  >
-                    {{ categoria.tipo }}
-                  </v-chip>
                 </div>
               </div>
             </div>
 
             <v-divider class="my-3" />
 
-            <div
-              v-if="categoria.total_lancamentos !== undefined"
-              class="text-caption text-medium-emphasis mb-3"
-            >
-              <v-icon class="mr-1" size="16">mdi-receipt-text</v-icon>
-              {{ categoria.total_lancamentos }} lançamento{{
-                categoria.total_lancamentos !== 1 ? "s" : ""
-              }}
-            </div>
-
             <div class="d-flex justify-space-between align-center">
               <div>
-                <div class="text-caption text-medium-emphasis mb-1">Saldo Atual</div>
                 <div class="text-h5 font-weight-bold" :style="{ color: categoria.cor }">
                   R$ {{ formatarValor(categoria.saldo_atual) }}
                 </div>
@@ -96,7 +77,7 @@
                 </div>
               </div>
 
-              <div class="d-flex gap-2">
+              <div class="d-flex flex-column gap-2">
                 <v-btn
                   color="#269B71"
                   icon="mdi-pencil"

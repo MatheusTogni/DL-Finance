@@ -64,7 +64,7 @@
             size="small"
             variant="flat"
           >
-            Versão 1.0.0
+            Versão 1.1.0
           </v-chip>
           <p class="text-caption text-disabled">
             © {{ new Date().getFullYear() }} DL Finance
