@@ -32,7 +32,7 @@
       elevation="8"
       height="70"
       class="d-md-none rounded-t-xl bottom-nav-border"
-      fixed
+      app
       grow
     >
       <v-btn
