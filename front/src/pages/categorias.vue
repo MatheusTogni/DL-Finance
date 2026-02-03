@@ -1,135 +1,196 @@
 <template>
-  <v-container class="pa-4">
-    <v-row>
-      <v-col cols="12">
-        <div class="d-flex justify-space-between align-center mb-4">
-          <h1 class="text-h4">Categorias</h1>
-          <v-btn
-            color="primary"
-            prepend-icon="mdi-plus"
-            @click="abrirDialogCategoria()"
-          >
-            Nova Categoria
-          </v-btn>
-        </div>
-      </v-col>
-    </v-row>
-
-    <v-row>
-      <v-col
-        v-for="categoria in categorias"
-        :key="categoria.id"
-        cols="12"
-        sm="6"
-        md="4"
+  <v-container class="pa-4 pa-md-6" style="max-width: 1200px">
+    <!-- Header -->
+    <div class="mb-6">
+      <v-btn
+        color="primary"
+        size="large"
+        prepend-icon="mdi-plus-circle"
+        block
+        class="mb-4"
+        elevation="2"
+        @click="abrirDialogCategoria()"
       >
-        <v-card
-          :style="{ borderLeft: `4px solid ${categoria.cor}` }"
-          class="categoria-card"
-        >
-          <v-card-title class="d-flex justify-space-between align-center">
-            <span>{{ categoria.nome }}</span>
-            <v-chip :color="categoria.cor" size="small">
-              {{ categoria.tipo }}
-            </v-chip>
-          </v-card-title>
-          
-          <v-card-text>
-            <div class="text-h5 mb-2">
-              R$ {{ formatarValor(categoria.saldo_atual) }}
-            </div>
-            <div v-if="categoria.total_lancamentos !== undefined" class="text-caption">
-              {{ categoria.total_lancamentos }} lançamentos
-            </div>
-          </v-card-text>
+        Nova Categoria
+      </v-btn>
+    </div>
 
-          <v-card-actions>
-            <v-btn
-              size="small"
-              variant="text"
-              @click="abrirDialogCategoria(categoria)"
+    <!-- Lista de Categorias -->
+    <div v-if="loadingCategorias" class="text-center pa-16">
+      <v-progress-circular
+        indeterminate
+        color="primary"
+        size="64"
+        width="6"
+      />
+      <p class="text-h6 mt-6 text-medium-emphasis">Buscando categorias...</p>
+    </div>
+
+    <v-row v-else>
+      <v-col v-for="categoria in categorias" :key="categoria.id" cols="12" sm="6" md="4">
+        <v-card class="categoria-card" elevation="2" hover>
+          <div class="pa-4">
+            <div class="d-flex justify-space-between align-center mb-3">
+              <div class="d-flex align-center">
+                <div
+                  :style="{
+                    backgroundColor: categoria.cor,
+                    width: '12px',
+                    height: '40px',
+                    borderRadius: '6px',
+                    marginRight: '12px',
+                  }"
+                />
+                <div>
+                  <h3 class="text-h6 font-weight-bold">{{ categoria.nome }}</h3>
+                  <v-chip
+                    :color="categoria.cor"
+                    size="small"
+                    variant="tonal"
+                    class="mt-1"
+                  >
+                    {{ categoria.tipo }}
+                  </v-chip>
+                </div>
+              </div>
+            </div>
+
+            <v-divider class="my-3" />
+
+            <div
+              v-if="categoria.total_lancamentos !== undefined"
+              class="text-caption text-medium-emphasis mb-3"
             >
-              <v-icon>mdi-pencil</v-icon>
-              Editar
-            </v-btn>
-            <v-btn
-              size="small"
-              variant="text"
-              color="error"
-              @click="confirmarExclusao(categoria)"
-            >
-              <v-icon>mdi-delete</v-icon>
-              Excluir
-            </v-btn>
-          </v-card-actions>
+              <v-icon size="16" class="mr-1">mdi-receipt-text</v-icon>
+              {{ categoria.total_lancamentos }} lançamento{{
+                categoria.total_lancamentos !== 1 ? "s" : ""
+              }}
+            </div>
+
+            <div class="d-flex justify-space-between align-center">
+              <div>
+                <div class="text-caption text-medium-emphasis mb-1">Saldo Atual</div>
+                <div class="text-h5 font-weight-bold" :style="{ color: categoria.cor }">
+                  R$ {{ formatarValor(categoria.saldo_atual) }}
+                </div>
+              </div>
+              
+              <div class="d-flex gap-2">
+                <v-btn
+                  variant="tonal"
+                  color="#269B71"
+                  size="small"
+                  icon="mdi-pencil"
+                  @click="abrirDialogCategoria(categoria)"
+                />
+                <v-btn
+                  variant="tonal"
+                  color="error"
+                  size="small"
+                  icon="mdi-delete"
+                  @click="confirmarExclusao(categoria)"
+                />
+              </div>
+            </div>
+          </div>
         </v-card>
       </v-col>
     </v-row>
 
     <!-- Dialog para criar/editar categoria -->
-    <v-dialog v-model="dialogCategoria" max-width="500">
-      <v-card>
-        <v-card-title>
-          {{ categoriaEdit ? 'Editar Categoria' : 'Nova Categoria' }}
+    <v-dialog
+      v-model="dialogCategoria"
+      max-width="500"
+      transition="dialog-bottom-transition"
+    >
+      <v-card rounded="xl">
+        <v-card-title class="bg-primary text-white pa-4">
+          <div class="d-flex align-center">
+            <v-icon class="mr-2">{{
+              categoriaEdit ? "mdi-pencil" : "mdi-plus-circle"
+            }}</v-icon>
+            {{ categoriaEdit ? "Editar Categoria" : "Nova Categoria" }}
+          </div>
         </v-card-title>
-        
-        <v-card-text>
+
+        <v-card-text class="pa-4 pa-md-6">
           <v-form ref="formCategoria" v-model="formValid">
             <v-text-field
               v-model="formData.nome"
-              label="Nome"
-              :rules="[v => !!v || 'Nome é obrigatório']"
+              label="Nome da Categoria"
+              placeholder="Ex: Lanches, Mercado, Investimentos"
+              :rules="[(v) => !!v || 'Nome é obrigatório']"
+              prepend-inner-icon="mdi-tag"
+              class="mb-2"
               required
             />
-            
+
             <v-text-field
               v-model="formData.tipo"
               label="Tipo"
-              :rules="[v => !!v || 'Tipo é obrigatório']"
-              hint="Ex: gastos, investimentos, lanches, mercado"
+              placeholder="Ex: gastos, investimentos, lanches"
+              :rules="[(v) => !!v || 'Tipo é obrigatório']"
+              prepend-inner-icon="mdi-shape"
+              class="mb-2"
               required
             />
-            
-            <v-text-field
-              v-model="formData.cor"
-              label="Cor (hexadecimal)"
-              placeholder="#9C27B0"
-              :rules="[validarCor]"
-            >
-              <template #prepend>
+
+            <div class="mb-4">
+              <v-label class="mb-2">Cor da Categoria</v-label>
+              <div class="d-flex align-center gap-3">
                 <div
-                  :style="{ 
-                    width: '30px', 
-                    height: '30px', 
+                  :style="{
+                    width: '60px',
+                    height: '60px',
                     backgroundColor: formData.cor || '#9C27B0',
-                    borderRadius: '4px'
+                    borderRadius: '12px',
+                    border: '3px solid #E0E0E0',
                   }"
                 />
-              </template>
-            </v-text-field>
-            
+                <v-text-field
+                  v-model="formData.cor"
+                  placeholder="#9C27B0"
+                  :rules="[validarCor]"
+                  hide-details
+                  density="comfortable"
+                />
+              </div>
+              <div class="mt-2 d-flex flex-wrap gap-2">
+                <v-btn
+                  v-for="cor in coresSugeridas"
+                  :key="cor"
+                  :color="cor"
+                  size="small"
+                  icon
+                  @click="formData.cor = cor"
+                />
+              </div>
+            </div>
+
             <v-text-field
               v-if="!categoriaEdit"
               v-model.number="formData.saldo_inicial"
-              label="Saldo Inicial"
+              label="Saldo Inicial (opcional)"
               type="number"
               step="0.01"
+              prepend-inner-icon="mdi-cash"
               prefix="R$"
             />
           </v-form>
         </v-card-text>
 
-        <v-card-actions>
+        <v-card-actions class="pa-4">
+          <v-btn variant="text" @click="dialogCategoria = false"> Cancelar </v-btn>
           <v-spacer />
-          <v-btn variant="text" @click="dialogCategoria = false">
-            Cancelar
-          </v-btn>
           <v-btn
             color="primary"
             variant="elevated"
+            size="large"
             :disabled="!formValid"
+            :loading="salvandoCategoria"
             @click="salvarCategoria"
           >
+            <v-icon start>mdi-content-save</v-icon>
             Salvar
           </v-btn>
         </v-card-actions>
@@ -138,26 +199,42 @@
 
     <!-- Dialog de confirmação de exclusão -->
     <v-dialog v-model="dialogExcluir" max-width="400">
-      <v-card>
-        <v-card-title>Confirmar Exclusão</v-card-title>
-        <v-card-text>
-          Tem certeza que deseja excluir a categoria "{{ categoriaParaExcluir?.nome }}"?
-          Todos os lançamentos associados também serão excluídos.
+      <v-card rounded="xl">
+        <v-card-title class="text-h6 pa-4">
+          <v-icon color="error" class="mr-2">mdi-alert-circle</v-icon>
+          Confirmar Exclusão
+        </v-card-title>
+        <v-card-text class="pa-4">
+          Tem certeza que deseja excluir a categoria
+          <strong>"{{ categoriaParaExcluir?.nome }}"</strong>? <br /><br />
+          <v-alert type="warning" variant="tonal" density="compact">
+            Todos os lançamentos associados também serão excluídos.
+          </v-alert>
         </v-card-text>
-        <v-card-actions>
+        <v-card-actions class="pa-4">
+          <v-btn variant="text" @click="dialogExcluir = false"> Cancelar </v-btn>
           <v-spacer />
-          <v-btn variant="text" @click="dialogExcluir = false">
-            Cancelar
-          </v-btn>
-          <v-btn color="error" variant="elevated" @click="excluirCategoria">
+          <v-btn color="error" variant="elevated" :loading="excluindoCategoria" @click="excluirCategoria">
+            <v-icon start>mdi-delete</v-icon>
             Excluir
           </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
 
-    <v-snackbar v-model="snackbar" :color="snackbarColor" timeout="3000">
-      {{ snackbarText }}
+    <v-snackbar
+      v-model="snackbar"
+      :color="snackbarColor"
+      timeout="3000"
+      location="top"
+      rounded="pill"
+    >
+      <div class="d-flex align-center">
+        <v-icon class="mr-2">{{
+          snackbarColor === "success" ? "mdi-check-circle" : "mdi-alert-circle"
+        }}</v-icon>
+        {{ snackbarText }}
+      </div>
     </v-snackbar>
   </v-container>
 </template>
@@ -173,6 +250,9 @@ const categoriaEdit = ref<Categoria | null>(null);
 const categoriaParaExcluir = ref<Categoria | null>(null);
 const formValid = ref(false);
 const formCategoria = ref();
+const loadingCategorias = ref(false);
+const salvandoCategoria = ref(false);
+const excluindoCategoria = ref(false);
 
 const formData = ref({
   nome: '',
@@ -185,12 +265,28 @@ const snackbar = ref(false);
 const snackbarText = ref('');
 const snackbarColor = ref('success');
 
+const coresSugeridas = [
+  '#9C27B0', // Roxo
+  '#E91E63', // Rosa
+  '#3F51B5', // Azul
+  '#009688', // Verde-azulado
+  '#FF9800', // Laranja
+  '#795548', // Marrom
+  '#607D8B', // Cinza-azulado
+  '#F44336', // Vermelho
+];
+
 const carregarCategorias = async () => {
   try {
+    loadingCategorias.value = true;
     const response = await categoriasApi.getResumo();
     categorias.value = response.data;
+    console.log('Categorias carregadas:', response.data);
   } catch (error) {
+    console.error('Erro ao carregar categorias:', error);
     mostrarMensagem('Erro ao carregar categorias', 'error');
+  } finally {
+    loadingCategorias.value = false;
   }
 };
 
@@ -217,11 +313,12 @@ const abrirDialogCategoria = (categoria?: Categoria) => {
 
 const salvarCategoria = async () => {
   if (!formCategoria.value) return;
-  
+
   const valid = await formCategoria.value.validate();
   if (!valid.valid) return;
 
   try {
+    salvandoCategoria.value = true;
     if (categoriaEdit.value) {
       await categoriasApi.update(categoriaEdit.value.id, {
         nome: formData.value.nome,
@@ -237,6 +334,8 @@ const salvarCategoria = async () => {
     carregarCategorias();
   } catch (error) {
     mostrarMensagem('Erro ao salvar categoria', 'error');
+  } finally {
+    salvandoCategoria.value = false;
   }
 };
 
@@ -249,12 +348,15 @@ const excluirCategoria = async () => {
   if (!categoriaParaExcluir.value) return;
 
   try {
+    excluindoCategoria.value = true;
     await categoriasApi.delete(categoriaParaExcluir.value.id);
     mostrarMensagem('Categoria excluída com sucesso!');
     dialogExcluir.value = false;
     carregarCategorias();
   } catch (error) {
     mostrarMensagem('Erro ao excluir categoria', 'error');
+  } finally {
+    excluindoCategoria.value = false;
   }
 };
 
@@ -263,8 +365,9 @@ const validarCor = (v: string) => {
   return /^#[0-9A-F]{6}$/i.test(v) || 'Cor inválida (use formato #RRGGBB)';
 };
 
-const formatarValor = (valor: number) => {
-  return valor.toFixed(2).replace('.', ',');
+const formatarValor = (valor: number | string) => {
+  const num = typeof valor === 'string' ? parseFloat(valor) : valor;
+  return num.toFixed(2).replace('.', ',');
 };
 
 const mostrarMensagem = (texto: string, cor: string = 'success') => {
@@ -280,10 +383,20 @@ onMounted(() => {
 
 <style scoped>
 .categoria-card {
-  transition: transform 0.2s;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .categoria-card:hover {
   transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(156, 39, 176, 0.15) !important;
+}
+
+.gap-2 {
+  gap: 8px;
+}
+
+.gap-3 {
+  gap: 12px;
 }
 </style>

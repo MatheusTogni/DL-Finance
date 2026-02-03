@@ -1,13 +1,19 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import * as dotenv from 'dotenv';
+
+// Carregar variáveis de ambiente do arquivo .env
+dotenv.config();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   
   // Configurar CORS para permitir comunicação com o frontend
   app.enableCors({
-    origin: 'http://localhost:5173', // URL do Vite (frontend)
+    origin: ['http://localhost:5173', 'http://127.0.0.1:5173'], // URL do Vite (frontend)
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
+    allowedHeaders: 'Content-Type, Accept, Authorization',
   });
 
   const port = process.env.PORT ?? 3001;

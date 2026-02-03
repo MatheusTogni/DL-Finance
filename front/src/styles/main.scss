@@ -1,0 +1,48 @@
+// Estilos globais customizados para DL Finance
+
+// Scrollbar customizada
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f5f5f5;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #9C27B0;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #7B1FA2;
+}
+
+// Animações suaves
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.v-card {
+  overflow: hidden;
+}
+
+// Melhora nos botões
+.v-btn {
+  text-transform: none !important;
+  letter-spacing: normal !important;
+}
+
+// Espaçamento mobile
+@media (max-width: 600px) {
+  .v-container {
+    padding: 12px !important;
+  }
+}
+
+// Cores customizadas para textos
+.text-primary-darken {
+  color: #7B1FA2 !important;
+}
