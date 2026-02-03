@@ -10,7 +10,7 @@ async function bootstrap() {
   
   // Configurar CORS para permitir comunicação com o frontend
   app.enableCors({
-    origin: ['https://dl-finance-pi.vercel.app', 'http://localhost:5173', 'http://127.0.0.1:5173'],
+    origin: ['https://dl-finance-front.vercel.app', 'http://localhost:5173', 'http://127.0.0.1:5173'],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
     allowedHeaders: ['Content-Type', 'Accept', 'Authorization'],
