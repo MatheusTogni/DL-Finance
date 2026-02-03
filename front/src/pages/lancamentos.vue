@@ -143,26 +143,6 @@
                 />
               </template>
             </v-select>
-
-            <div class="mb-4">
-              <v-label class="mb-2 d-block">Tipo de Lançamento</v-label>
-              <v-btn-toggle
-                v-model="formData.tipo_lancamento"
-                mandatory
-                divided
-                color="primary"
-                class="w-100"
-              >
-                <v-btn value="entrada" class="flex-grow-1" size="large">
-                  <v-icon start color="success">mdi-plus-circle</v-icon>
-                  Entrada
-                </v-btn>
-                <v-btn value="saida" class="flex-grow-1" size="large">
-                  <v-icon start color="error">mdi-minus-circle</v-icon>
-                  Saída
-                </v-btn>
-              </v-btn-toggle>
-            </div>
             
             <v-text-field
               v-model.number="formData.valor"
@@ -249,7 +229,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import { lancamentosApi, categoriasApi, type Lancamento, type Categoria } from '@/services/api';
 
 const lancamentos = ref<Lancamento[]>([]);
@@ -402,6 +382,17 @@ const mostrarMensagem = (texto: string, cor: string = 'success') => {
   snackbarColor.value = cor;
   snackbar.value = true;
 };
+
+// Determinar automaticamente o tipo de lançamento baseado na categoria
+watch(() => formData.value.categoria_id, (novaCategoriaId) => {
+  if (novaCategoriaId) {
+    const categoriaSelecionada = categorias.value.find(c => c.id === novaCategoriaId);
+    if (categoriaSelecionada) {
+      // Se a categoria é do tipo "Positivo", é entrada; se "Negativo", é saída
+      formData.value.tipo_lancamento = categoriaSelecionada.tipo.toLowerCase() === 'positivo' ? 'entrada' : 'saida';
+    }
+  }
+});
 
 onMounted(() => {
   carregarCategorias();
